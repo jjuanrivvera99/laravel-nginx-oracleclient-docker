@@ -1,0 +1,90 @@
+version: '3.7'
+
+services:
+
+  app:
+    build:
+      context: docker/php
+      dockerfile: Dockerfile
+    container_name: app
+    image: jjuanrivvera99/laravel:oracle-alpine
+    restart: always
+    depends_on:
+      - redis
+    volumes:
+      - ./core:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  web:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./core:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  queue:
+    container_name: queue
+    restart: always
+    depends_on:
+      - redis
+    image: jjuanrivvera99/laravel:oracle-alpine
+    environment:
+      CONTAINER_ROLE: "queue"
+    volumes:
+      - "./core:/var/www/"
+    networks:
+      - app-network
+
+  scheduler:
+    container_name: scheduler
+    restart: always
+    depends_on:
+      - redis
+    image: jjuanrivvera99/laravel:oracle-alpine
+    environment:
+      CONTAINER_ROLE: "scheduler"
+    volumes:
+      - "./core:/var/www/"
+    networks:
+      - app-network
+
+  node:
+    image: jjuanrivvera99/node:alpine
+    restart: always
+    build:
+      context: docker/node
+      dockerfile: Dockerfile
+    container_name: node
+    volumes:
+      - ./core:/var/www
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+
+  redis-data:
+    driver: local
