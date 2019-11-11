@@ -6,8 +6,9 @@ ENV ORACLE_HOME /opt/oci8/instantclient_12_2
 # Set working directory
 WORKDIR /var/www
 
-RUN docker-php-ext-install pdo pdo_mysql && \
-    apk add bash git autoconf gcc make g++ zlib-dev libaio libnsl musl-dev libc6-compat gcompat libtool
+RUN apk add bash git autoconf gcc make g++ zlib-dev libaio libnsl musl-dev libc6-compat gcompat libtool libxml2-dev && \
+    docker-php-ext-install bcmath mbstring pdo tokenizer xml zip
+    
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
