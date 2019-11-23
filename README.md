@@ -26,7 +26,7 @@ Take the following steps:
 
 Enable auth (Laravel 6):
 
-- run command: docker-compose exec app composer install laravel/ui
+- run command: docker-compose exec app composer require laravel/ui
 - run command: docker-compose exec app php artisan ui vue --auth
 - run command: docker-compose exec node npm install
 - run command: docker-compose exec node npm run dev
